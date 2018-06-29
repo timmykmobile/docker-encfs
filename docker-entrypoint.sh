@@ -58,7 +58,7 @@ fi
 
 # Mount away!
         if [ "$ENCFS_PASS" ]; then
-            exec su - abc -c ENCFS6_CONFIG='/config/encfs.xml' encfs -o allow_other -f --extpass='/bin/echo $ENCFS_PASS' $MOUNT_SOURCE $MOUNT_TARGET
+            exec su -l -c abc "ENCFS6_CONFIG='/config/encfs.xml' encfs -o allow_other -f --extpass='/bin/echo $ENCFS_PASS' $MOUNT_SOURCE $MOUNT_TARGET"
         else
-            exec su - abc -c ENCFS6_CONFIG='/config/encfs.xml' encfs -o allow_other -f --extpass='cat /config/encfspass' $MOUNT_SOURCE $MOUNT_TARGET
+            exec su -l -c abc "ENCFS6_CONFIG='/config/encfs.xml' encfs -o allow_other -f --extpass='cat /config/encfspass' $MOUNT_SOURCE $MOUNT_TARGET"
         fi
