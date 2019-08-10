@@ -22,7 +22,7 @@ RUN chmod +x /docker-entrypoint.sh  && \
 	useradd -u 911 -U -d / -s /bin/false abc && \
 	usermod -G users abc && \
     apt-get clean autoclean && \
-    apt-get autoremove -y && \
+    apt-get autoremove -y
 
 ####################
 # ENVIRONMENT VARIABLES
