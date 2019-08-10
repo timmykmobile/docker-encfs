@@ -39,5 +39,5 @@ VOLUME /data /raw /config
 ####################
 # ENTRYPOINT
 ####################
-ENTRYPOINT ["/init"]
+#ENTRYPOINT ["/init"]
 CMD ["/docker-entrypoint.sh"]
