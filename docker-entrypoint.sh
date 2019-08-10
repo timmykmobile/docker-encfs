@@ -1,24 +1,8 @@
 #!/bin/bash
 
-PUID=${PUID:-0}
-PGID=${PGID:-0}
 
-## Create a group for our gid if required
-#if [ -z "$(getent group abc)" ]; then
-#        echo "creating abc group for gid ${PGID}"
-#        groupadd --gid ${PGID} --non-unique abc >/dev/null 2>&1
-#fi
-#
-## Create a user for our uid if required
-#if [ -z "$(getent passwd abc)" ]; then
-#        echo "creating abc group for uid ${PUID}"
-#        useradd --gid ${PGID} --non-unique --comment "abc" \
-#         --home-dir "/config" --create-home \
-#         --uid ${PUID} abc >/dev/null 2>&1
-#
-#        echo "taking ownership of /config for abc"
-#        chown ${PUID}:${PGID} /config
-#fi
+PUID=${PUID:-911}
+PGID=${PGID:-911}
 
 if [ ! "$(id -u abc)" -eq "$PUID" ]; then usermod -o -u "$PUID" abc ; fi
 if [ ! "$(id -g abc)" -eq "$PGID" ]; then groupmod -o -g "$PGID" abc ; fi
@@ -32,9 +16,21 @@ User uid:    $(id -u abc)
 User gid:    $(id -g abc)
 -------------------------------------
 "
+chmod -R 777 \
+	/var/lock \
+        /data \
+        /raw \
 
-        chown -R ${PUID}:${PGID} /config
+chmod a+r /etc/fuse.conf
 
+chown -R abc:abc \
+    /config \
+    /data \
+    /raw \
+    /usr/bin/* 
+
+MOUNT_SOURCE="/raw"
+MOUNT_TARGET="/data"
 
 # Ensure source is defined
 if [ -z "$MOUNT_SOURCE" ]; then
