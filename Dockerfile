@@ -28,7 +28,7 @@ RUN chmod +x /docker-entrypoint.sh  && \
 # ENVIRONMENT VARIABLES
 ####################
 # Encryption
-ENV REVERSE "no"
+ENV REVERSE "no" # set the default variable
 
 ####################
 # VOLUMES
@@ -40,4 +40,7 @@ VOLUME /data /raw /config
 # ENTRYPOINT
 ####################
 #ENTRYPOINT ["/init"]
+ADD docker-entrypoint.sh /
+RUN chmod +x docker-entrypoint.sh
+
 CMD ["/docker-entrypoint.sh"]
