@@ -1,13 +1,29 @@
 #!/bin/bash
 
 
-PUID=${PUID:-911}
-PGID=${PGID:-911}
+# Making the /config directory
+MOUNT_SOURCE=mount-source
+MOUNT_TARGET=mount-target
 
-if [ ! "$(id -u abc)" -eq "$PUID" ]; then usermod -o -u "$PUID" abc ; fi
-if [ ! "$(id -g abc)" -eq "$PGID" ]; then groupmod -o -g "$PGID" abc ; fi
+# Set the PUID and GUID of the user
+PUID=1000
+PGID=1000
 
-. "/usr/bin/variables"
+# Create a group for our gid if required
+if [ -z "$(getent group abc)" ]; then
+        echo "creating abc group for gid ${PGID}"
+        groupadd -g ${PGID} -o abc >/dev/null 2>&1
+fi
+
+
+
+# Create a user for our uid if required
+if [ -z "$(getent passwd abc)" ]; then
+        echo "creating abc group for uid ${PUID}"
+        useradd -u ${PUID} -g ${PGID} \
+         -s /bin/bash -m -d "/config" \
+         abc >/dev/null 2>&1
+fi
 
 echo "
 GID/UID
@@ -16,61 +32,36 @@ User uid:    $(id -u abc)
 User gid:    $(id -g abc)
 -------------------------------------
 "
-chmod -R 777 \
-	/var/lock \
-        /data \
-        /raw \
 
-chmod a+r /etc/fuse.conf
-
-chown -R abc:abc \
-    /config \
-    /data \
-    /raw \
-    /usr/bin/* 
-
-MOUNT_SOURCE="/raw"
-MOUNT_TARGET="/data"
-
-# Ensure source is defined
-if [ -z "$MOUNT_SOURCE" ]; then
-    echo "Need to set MOUNT_SOURCE"
-    exit 1
+# Create the folders for the mounts if required
+if [ -z /$MOUNT_SOURCE ]; then
+        echo "creating folder /$MOUNT_SOURCE"
+        mkdir /$MOUNT_SOURCE
 fi
 
-# Ensure target is defined
-if [ -z "$MOUNT_TARGET" ]; then
-    echo "Need to set MOUNT_TARGET"
-    exit 1
+if [ -z /$MOUNT_TARGET ]; then
+        echo "creating folder /$MOUNT_SOURCE"
+        mkdir /$MOUNT_TARGET
 fi
 
-# Wait for any required mounts
-if [ "$WAIT_FOR_MNT" ]; then
-    while true ; do
-        if mount | grep -q "$WAIT_FOR_MNT" ; then
-            break
-        fi
 
-        echo "Waiting for mount $WAIT_FOR_MNT";
-        sleep 5
-    done
-fi
+        echo "taking ownership of /config for abc"
+        chown ${PUID}:${PGID} /config
+        chown ${PUID}:${PGID} /$MOUNT_SOURCE
+        chown ${PUID}:${PGID} /$MOUNT_TARGET
 
-# Make directories if required
 
-        echo "making mount source and target folders if required"
-        mkdir -p $MOUNT_SOURCE
-        mkdir -p $MOUNT_TARGET
-        echo "taking ownership of mount source and target for user"
-        chown ${PUID}:${PGID} $MOUNT_SOURCE
-        chown ${PUID}:${PGID} $MOUNT_TARGET
 
 # Cleanup any existing mount
-        umount -f $MOUNT_TARGET
+umount -f $MOUNT_TARGET
 
 # Mount away!
-        if [ "$ENCFS_PASS" ]; then
-            exec su -l -c abc "ENCFS6_CONFIG='/config/encfs.xml' encfs -o allow_other -f --extpass='/bin/echo $ENCFS_PASS' $MOUNT_SOURCE $MOUNT_TARGET"
-        else
-            exec su -l -c abc "ENCFS6_CONFIG='/config/encfs.xml' encfs -o allow_other -f --extpass='cat /config/encfspass' $MOUNT_SOURCE $MOUNT_TARGET"
-        fi
+#if [ "$ENCFS_PASS" ]; then
+    echo "Mounting at target"
+    ENCFS6_CONFIG='/config/encfs.xml' encfs --extpass="cat /config/encfspass" -o allow_other /$MOUNT_SOURCE /$MOUNT_TARGET
+    echo "Mounted now hopefully"
+#else
+#    encfs -o allow_other $MOUNT_SOURCE $MOUNT_TARGET
+#fi
+
+
