@@ -51,10 +51,6 @@ fi
         chown ${PUID}:${PGID} /$MOUNT_TARGET
 
 
-
-# Cleanup any existing mount
-umount -f $MOUNT_TARGET
-
 # Mount away!
 #if [ "$ENCFS_PASS" ]; then
     echo "Mounting at target"
