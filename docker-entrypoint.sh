@@ -50,6 +50,12 @@ fi
         chown ${PUID}:${PGID} /$MOUNT_SOURCE
         chown ${PUID}:${PGID} /$MOUNT_TARGET
 
+# Cleanup any existing mount
+echo "unmounting /$MOUNT_TARGET"
+umount -f $MOUNT_TARGET
+echo "changing ownership of /$MOUNT_TARGET to ${PUID}"
+        chown ${PUID}:${PGID} /$MOUNT_TARGET
+
 
 # Mount away!
 #if [ "$ENCFS_PASS" ]; then
