@@ -34,4 +34,5 @@ ADD docker-entrypoint.sh /
 RUN chmod +x docker-entrypoint.sh
 
 CMD ["/docker-entrypoint.sh"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
 #CMD ["tail", "-f", "/dev/null"]
