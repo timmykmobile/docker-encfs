@@ -45,25 +45,37 @@ if [ -z /$MOUNT_TARGET ]; then
 fi
 
 
-        echo "taking ownership of /config for abc"
+        echo "taking ownership of /config, /$MOUNT_SOURCE & /$MOUNT_TARGET for abc"
         chown ${PUID}:${PGID} /config
         chown ${PUID}:${PGID} /$MOUNT_SOURCE
         chown ${PUID}:${PGID} /$MOUNT_TARGET
 
 # Cleanup any existing mount
-echo "unmounting /$MOUNT_TARGET"
-umount -f $MOUNT_TARGET
-echo "changing ownership of /$MOUNT_TARGET to ${PUID}"
-        chown ${PUID}:${PGID} /$MOUNT_TARGET
+#echo "unmounting /$MOUNT_TARGET"
+#umount -f $MOUNT_TARGET
+#echo "changing ownership of /$MOUNT_TARGET to ${PUID}"
+#        chown ${PUID}:${PGID} /$MOUNT_TARGET
 
 
-# Mount away!
-#if [ "$ENCFS_PASS" ]; then
-    echo "Mounting at target"
-    ENCFS6_CONFIG='/config/encfs.xml' encfs --extpass="cat /config/encfspass" -o allow_other /$MOUNT_SOURCE /$MOUNT_TARGET
-    echo "Mounted now hopefully"
-#else
-#    encfs -o allow_other $MOUNT_SOURCE $MOUNT_TARGET
-#fi
+# Check if existing mount
+if grep -qs '/$MOUNT_TARGET ' /proc/mounts; then
+    echo "It's mounted."
+else
+    echo "It's not mounted."
+
+    # Mount away!
+    #if [ "$ENCFS_PASS" ]; then
+        echo "Mounting at target"
+        ENCFS6_CONFIG='/config/encfs.xml' encfs --extpass="cat /config/encfspass" -o allow_other /$MOUNT_SOURCE /$MOUNT_TARGET
+        echo "Mounted now hopefully"
+    #else
+    #    encfs -o allow_other $MOUNT_SOURCE $MOUNT_TARGET
+    #fi
+
+fi
+
+# and below to keep the container running.
+tail -f /dev/null
+
 
 
