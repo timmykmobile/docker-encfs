@@ -19,7 +19,10 @@ RUN apt-get install -y encfs && \
 # ENVIRONMENT VARIABLES
 ####################
 # Encryption
-ENV REVERSE "no" # set the default variable
+ENV ENCFS_REVERSE=0 \
+    ENCFS_XML_NAME=encfs.xml \
+    ENCFS_PASSWORD_NAME=encfspass
+
 
 ####################
 # VOLUMES
@@ -32,7 +35,8 @@ ENV REVERSE "no" # set the default variable
 ####################
 #ENTRYPOINT ["/init"]
 ADD docker-entrypoint.sh /
-RUN chmod +x docker-entrypoint.sh
+RUN echo user_allow_other >> /etc/fuse.conf \
+    && chmod +x /docker-entrypoint.sh
 
 #ENTRYPOINT ["tail", "-f", "/dev/null"]
 ENTRYPOINT ["/docker-entrypoint.sh"]
