@@ -21,7 +21,9 @@ RUN apt-get install -y encfs && \
 # Encryption
 ENV ENCFS_REVERSE=0 \
     ENCFS_XML_NAME=encfs.xml \
-    ENCFS_PASSWORD_NAME=encfspass
+    ENCFS_PASSWORD_NAME=encfspass \
+    ENCFS_SUBDIR_SOURCE= \
+    ENCFS_SUBDIR_TARGET=
 
 
 ####################
