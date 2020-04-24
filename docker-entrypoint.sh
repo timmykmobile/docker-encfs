@@ -4,10 +4,13 @@ echo "hello!"
 echo "$ENCFS_REVERSE"
 echo "$ENCFS_XML_NAME"
 echo "$ENCFS_PASSWORD_NAME"
+echo "$ENCFS_SUBDIR_SOURCE"
+echo "$ENCFS_SUBDIR_TARGET"
+
 
 # Making the /config directory
-MOUNT_SOURCE=mount-source
-MOUNT_TARGET=mount-target
+MOUNT_SOURCE=mount-source/"$ENCFS_SUBDIR_SOURCE"
+MOUNT_TARGET=mount-target/"$ENCFS_SUBDIR_TARGET"
 
 # Set the PUID and GUID of the user
 PUID=1000
@@ -34,19 +37,32 @@ User uid:    $(id -u abc)
 User gid:    $(id -g abc)
 -------------------------------------
 "
+##################################
+# Check if the source and target directory (and subdirectory) are there
+##################################
+        if [ ! -d /$MOUNT_SOURCE ]; then
+                echo "The source directory is not found.  please check that plexdrive is up and running and that it $
+                while [ ! -d /$MOUNT_SOURCE ]; do
+                        sleep 5;
+                done
+                echo "Source directory has been found. Continuing with mounting"
+        fi
+        echo "Source directory is available"
 
-# Create the folders for the mounts if required
-if [ -z /$MOUNT_SOURCE ]; then
-        echo "creating folder /$MOUNT_SOURCE"
-        mkdir /$MOUNT_SOURCE
-fi
-
-if [ -z /$MOUNT_TARGET ]; then
-        echo "creating folder /$MOUNT_SOURCE"
-        mkdir /$MOUNT_TARGET
-fi
+        if [ ! -d /$MOUNT_TARGET ]; then
+                echo "The target directory is not found.  please check that plexdrive is up and running and that it $
+                while [ ! -d /$MOUNT_TARGET ]; do
+                        sleep 5;
+                done
+                echo "Target directory has been found.  Continuing with mounting."
+        fi
+        echo "Target directory is available"
 
 
+
+################################
+# Taking ownership of the following drives
+###############################
         echo "taking ownership of /config, /$MOUNT_SOURCE & /$MOUNT_TARGET for abc"
         chown ${PUID}:${PGID} /config
         chown ${PUID}:${PGID} /$MOUNT_SOURCE
