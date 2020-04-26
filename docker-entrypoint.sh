@@ -41,7 +41,7 @@ User gid:    $(id -g abc)
 # Check if the source and target directory (and subdirectory) are there
 ##################################
         if [ ! -d /$MOUNT_SOURCE ]; then
-                echo "The source directory is not found.  please check that plexdrive is up and running and that it $
+                echo "The source directory is not found.  please check that plexdrive is up and running"
                 while [ ! -d /$MOUNT_SOURCE ]; do
                         sleep 5;
                 done
@@ -50,7 +50,7 @@ User gid:    $(id -g abc)
         echo "Source directory is available"
 
         if [ ! -d /$MOUNT_TARGET ]; then
-                echo "The target directory is not found.  please check that plexdrive is up and running and that it $
+                echo "The target directory is not found at /$MOUNT_TARGET"
                 while [ ! -d /$MOUNT_TARGET ]; do
                         sleep 5;
                 done
